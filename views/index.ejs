@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Open world chat</title>
+</head>
+
+<body>
+    <p id="message"></p>
+
+    <div class="down">
+        <input type="text" id="sometext">
+        <button id="sendit" onclick="dosomeshit()"> send message </button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+        let socket = io.connect(full);
+        let person = '';
+        if (typeof localStorage.name === 'undefined') {
+            person = prompt("Please enter your name:", "");
+            if (person == null || person == "") {
+                location.reload();
+            } else {
+                localStorage.name = person;
+            }
+        }
+        person = localStorage.name;
+        function dosomeshit() {
+            socket.emit('message', person + ": " + document.getElementById('sometext').value);
+            document.getElementById('sometext').value = "";
+        }
+        socket.on('message', (mes) => {
+            console.log(mes);
+            document.getElementById('message').innerHTML += '<br>' + mes;
+        });
+    </script>
+</body>
+
+</html>
